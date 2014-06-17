@@ -520,10 +520,16 @@ namespace DuiLib
 	{
 		if( m_dwTextColor == 0 ) m_dwTextColor = m_pManager->GetDefaultFontColor();
 		if( m_dwDisabledTextColor == 0 ) m_dwDisabledTextColor = m_pManager->GetDefaultDisabledColor();
-
-		if( m_sText.IsEmpty() ) return;
-
-		CDuiString sText = m_sText;
+		CDuiString sText;
+		DWORD dwTextColor = m_dwTextColor;
+		if( m_sText.IsEmpty() )
+		{
+			sText = m_sToolTip;
+			dwTextColor = m_dwDisabledTextColor;
+		}
+		else
+		{
+			sText = m_sText;
 		if( m_bPasswordMode ) {
 			sText.Empty();
 			LPCTSTR p = m_sText.GetData();
@@ -532,14 +538,16 @@ namespace DuiLib
 				p = ::CharNext(p);
 			}
 		}
-
+		}
+		if(sText.IsEmpty() )
+			return;
 		RECT rc = m_rcItem;
 		rc.left += m_rcTextPadding.left;
 		rc.right -= m_rcTextPadding.right;
 		rc.top += m_rcTextPadding.top;
 		rc.bottom -= m_rcTextPadding.bottom;
 		if( IsEnabled() ) {
-			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, m_dwTextColor, \
+			CRenderEngine::DrawText(hDC, m_pManager, rc, sText, dwTextColor, \
 				m_iFont, DT_SINGLELINE | m_uTextStyle);
 		}
 		else {
